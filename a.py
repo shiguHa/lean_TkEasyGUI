@@ -1,4 +1,5 @@
 import numpy as np
+import pandas as pd
 
 class UnbiasedStandardScaler:
     """
@@ -22,11 +23,12 @@ class UnbiasedStandardScaler:
         データ X を学習し、各列ごとの平均と不偏標準偏差を計算します。
 
         パラメータ:
-            X (numpy.ndarray): 標準化するための 2D データ (形状: [サンプル数, 特徴量数])
+            X (numpy.ndarray or pandas.DataFrame): 標準化するための 2D データ (形状: [サンプル数, 特徴量数])
 
         戻り値:
             self (UnbiasedStandardScaler): 学習済みのスケーラーオブジェクト
         """
+        # Pandas DataFrame が渡された場合、numpy 配列に変換
         X = np.asarray(X)
         self.__mean = X.mean(axis=0)
         self.__std = X.std(axis=0, ddof=1)  # 不偏標準偏差 (n-1 で割る)
@@ -37,17 +39,20 @@ class UnbiasedStandardScaler:
         学習済みの平均と標準偏差を使用して X を標準化します。
 
         パラメータ:
-            X (numpy.ndarray): 標準化する 2D データ
+            X (numpy.ndarray or pandas.DataFrame): 標準化する 2D データ
 
         戻り値:
             numpy.ndarray: 標準化されたデータ（Zスコア変換後の値）
-
-        例外:
-            ValueError: fit() が未実行の場合
         """
         if self.__mean is None or self.__std is None:
             raise ValueError("Scaler has not been fitted yet.")
-        return (X - self.__mean) / self.__std
+        
+        # 標準化の計算
+        X = np.asarray(X)
+        X_scaled = (X - self.__mean) / self.__std
+        
+        # 結果は常に numpy.ndarray として返す
+        return X_scaled
 
     def inverse_transform(self, X_scaled):
         """
@@ -58,13 +63,13 @@ class UnbiasedStandardScaler:
 
         戻り値:
             numpy.ndarray: 元のスケールに戻したデータ
-
-        例外:
-            ValueError: fit() が未実行の場合
         """
         if self.__mean is None or self.__std is None:
             raise ValueError("Scaler has not been fitted yet.")
-        return X_scaled * self.__std + self.__mean
+        
+        # 元のスケールに戻す
+        X_restored = X_scaled * self.__std + self.__mean
+        return X_restored
 
     def get_mean(self):
         """
@@ -87,23 +92,28 @@ class UnbiasedStandardScaler:
 
 # --- 使用例 ---
 if __name__ == "__main__":
-    # サンプルデータ
-    X = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
+    # Pandas DataFrame を使用したサンプルデータ
+    df = pd.DataFrame({
+        'A': [1, 4, 7],
+        'B': [2, 5, 8],
+        'C': [3, 6, 9]
+    })
 
     # スケーラーのインスタンス化
     scaler = UnbiasedStandardScaler()
 
     # 学習
-    scaler.fit(X)
+    scaler.fit(df)
 
     # 平均と標準偏差の取得（外部から変更不可）
     print("Mean:", scaler.get_mean())  # [4. 5. 6.]
     print("Std (Unbiased):", scaler.get_std())  # [3. 3. 3.]
 
     # 標準化
-    X_scaled = scaler.transform(X)
-    print("標準化後のデータ:\n", X_scaled)
+    df_scaled = scaler.transform(df)
+    print(type(df_scaled))
+    print("標準化後のデータ:\n", df_scaled)
 
     # 逆変換
-    X_restored = scaler.inverse_transform(X_scaled)
-    print("逆変換後のデータ（元のスケール）:\n", X_restored)
+    df_restored = scaler.inverse_transform(df_scaled)
+    print("逆変換後のデータ（元のスケール）:\n", df_restored)
