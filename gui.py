@@ -30,7 +30,7 @@ class BayesianOptimizationApp:
         tab1_layout = [[self.tbl], [eg.Button("Update", expand_x=True), eg.Button("Close")], self.textBox]
         tab2_layout = [[eg.Text("This is Tab 2")], [eg.Button("Close")], [eg.Button("Disable Tab 1", key="-DISABLE_TAB1-")], [eg.Button("Enable Tab 1", key="-ENABLE_TAB1-")]]
 
-        self.layout = [[eg.TabGroup([[eg.Tab("Tab 1", tab1_layout, key="-TAB1-"), eg.Tab("Tab 2", tab2_layout, key="-TAB2-")]])]]
+        self.layout = [[eg.TabGroup([[eg.Tab("あああ1", tab1_layout, key="-TAB1-"), eg.Tab("[Preset]最適化パラメーター", tab2_layout, key="-TAB2-")]])]]
         # create window
         self.win = eg.Window("Table test", self.layout, font=("Arial", 12), resizable=True, size=(800, 600))
 
