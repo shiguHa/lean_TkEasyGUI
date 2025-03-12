@@ -20,3 +20,7 @@ let
     #"展開された Chunks" = Table.ExpandRecordColumn(ExpandedChunks, "Chunks", {"Index", "Chunk"}, {"Chunks.Index", "Chunks.Chunk"})
 in
     #"展開された Chunks"
+
+
+
+メジャー = "data:image/bmp;base64," & CONCATENATEX('画像', '画像'[Chunks.Chunk],,[Chunks.Index],ASC)
