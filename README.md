@@ -24,3 +24,13 @@ in
 
 
 メジャー = "data:image/bmp;base64," & CONCATENATEX('画像', '画像'[Chunks.Chunk],,[Chunks.Index],ASC)
+
+
+https://qiita.com/torimaro/items/32c86ff4f89c3719c57e
+https://community.fabric.microsoft.com/t5/Desktop/Embed-png-image-in-powerbi-using-Base64-not-concatenating/td-p/2633844
+
+https://qiita.com/sys_zero/items/c7fb9bed63040fc2dc96
+
+https://www.alphabold.com/complete-guide-to-embed-images-in-power-bi-reports-part-iii/
+
+https://blog.gbrueckl.at/2018/01/storing-images-powerbi-analysis-services-data-models/
