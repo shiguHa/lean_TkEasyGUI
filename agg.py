@@ -1,26 +1,35 @@
 import pandas as pd
 import numpy as np
+from typing import Callable, List, Optional, Tuple
 
 def aggregate_transform(
-    df, agg_func, group_cols, target_col, x_col=None, y_col=None, x_range=None, y_range=None
-):
+    df: pd.DataFrame,
+    agg_func: Callable[[pd.Series], float],
+    group_cols: List[str],
+    target_col: str,
+    x_col: Optional[str] = None,
+    y_col: Optional[str] = None,
+    x_range: Optional[Tuple[float, float]] = None,
+    y_range: Optional[Tuple[float, float]] = None
+) -> pd.Series:
     """
     任意の列でグループ化し、指定の集約関数を適用する汎用関数。
 
     Parameters:
         df (pd.DataFrame): 入力データフレーム
-        agg_func (callable): 集約関数（例: np.mean, np.max, geometric_mean）
-        group_cols (list): グループ化する列のリスト（例: ['id', 'cnt']）
+        agg_func (Callable[[pd.Series], float]): 集約関数（例: np.mean, np.max, geometric_mean）
+        group_cols (List[str]): グループ化する列のリスト（例: ['id', 'cnt']）
         target_col (str): 集約する対象の列名（例: 'measure_value'）
-        x_col (str, optional): x の列名
-        y_col (str, optional): y の列名
-        x_range (tuple, optional): x の範囲 (min, max)
-        y_range (tuple, optional): y の範囲 (min, max)
+        x_col (Optional[str], optional): x の列名（例: 'x'）。デフォルトは None。
+        y_col (Optional[str], optional): y の列名（例: 'y'）。デフォルトは None。
+        x_range (Optional[Tuple[float, float]], optional): x の範囲 (min, max)。デフォルトは None。
+        y_range (Optional[Tuple[float, float]], optional): y の範囲 (min, max)。デフォルトは None。
 
     Returns:
         pd.Series: 集約した値を各行に適用した Series
     """
-    def aggregate(group):
+
+    def aggregate(group: pd.DataFrame) -> float:
         filtered = group
         if x_col and x_range:
             filtered = filtered[(filtered[x_col] >= x_range[0]) & (filtered[x_col] <= x_range[1])]
@@ -35,8 +44,8 @@ def aggregate_transform(
     return df.groupby(group_cols)[target_col].transform(lambda x: aggregate(df.loc[x.index]))
 
 # 幾何平均の関数
-def geometric_mean(series):
-    return np.exp(np.log(series).mean())
+def geometric_mean(series: pd.Series) -> float:
+    return float(np.exp(np.log(series).mean()))
 
 # サンプルデータ
 data = {
